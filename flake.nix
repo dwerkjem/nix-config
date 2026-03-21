@@ -23,6 +23,17 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          python313Env = pkgs.python313.withPackages (
+            ps: with ps; [
+              # python packages here
+              pip
+              virtualenv
+              wheel
+              setuptools
+              black
+              isort
+            ]
+          );
           lazyvimInit = pkgs.writeText "lazyvim-init.lua" ''
             vim.g.mapleader = " "
             vim.g.maplocalleader = "\\"
@@ -61,6 +72,7 @@
         in
         with pkgs;
         [
+          # System tools here
           fd
           git
           nixfmt
@@ -72,6 +84,9 @@
           postgresql_18
           lazyvim
           nodejs
+          nodenv
+          python313Env
+          poetry
         ];
     in
     {

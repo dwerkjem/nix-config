@@ -23,9 +23,10 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          # Keep Python CLI tooling bundled under one interpreter to avoid
+          # Home Manager path collisions between multiple Python versions.
           python313Env = pkgs.python313.withPackages (
             ps: with ps; [
-              # python packages here
               pip
               virtualenv
               wheel
@@ -60,6 +61,8 @@
               },
             })
           '';
+          # Package the LazyVim config as a normal Neovim binary so it can live
+          # in home.packages like the rest of the toolchain.
           lazyvim = pkgs.wrapNeovim pkgs.neovim-unwrapped {
             viAlias = true;
             vimAlias = true;
@@ -72,7 +75,7 @@
         in
         with pkgs;
         [
-          # System tools here
+          # General packages and tools
           fd
           git
           nixfmt

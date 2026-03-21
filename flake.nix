@@ -96,6 +96,7 @@
           nodenv
           python313Env
           poetry
+          vscode
         ];
     in
     {

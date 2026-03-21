@@ -59,17 +59,19 @@
             };
           };
         in
+        with pkgs;
         [
-          pkgs.fd
-          pkgs.git
-          pkgs.nixfmt
-          pkgs.ripgrep
-          pkgs.zsh
-          pkgs.magic-wormhole-rs
-          pkgs.lemonade
-          pkgs.direnv
-          pkgs.postgresql_18
+          fd
+          git
+          nixfmt
+          ripgrep
+          zsh
+          magic-wormhole-rs
+          lemonade
+          direnv
+          postgresql_18
           lazyvim
+          nodejs
         ];
     in
     {

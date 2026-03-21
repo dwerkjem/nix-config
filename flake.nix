@@ -105,6 +105,12 @@
 
             home.packages = mkPackages "x86_64-linux";
 
+            
+            home.file.".zshrc" = {
+              source = ./.zshrc;
+              force = true;
+            };
+
             programs.git = {
               enable = true;
               settings.user = {

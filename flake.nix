@@ -105,9 +105,36 @@
 
             home.packages = mkPackages "x86_64-linux";
 
-            
+            programs.zsh = {
+              enable = true;
+              oh-my-zsh = {
+                enable = true;
+                theme = "agnoster";
+                plugins = [ "git" ];
+              };
+
+              shellAliases.update-system =
+                "nix run github:nix-community/home-manager -- switch --flake $HOME/nix-config#$USER";
+
+              initContent = ''
+                ### set PATH so it includes user's nix bin if it exists
+                if [ -d "$HOME/.nix-profile/bin" ] ; then
+                    PATH="$HOME/.nix-profile/bin:$PATH"
+                fi
+
+                ### set XDG_DATA_DIR so it includes user's nix share if it exists
+                if [ -d "$HOME/.nix-profile/share" ] ; then
+                    XDG_DATA_DIRS="$HOME/.nix-profile/share:$XDG_DATA_DIRS"
+                fi
+
+                export EDITOR="$HOME/.nix-profile/bin/nvim"
+                export VISUAL="$HOME/.nix-profile/bin/nvim"
+                export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"
+              '';
+            };
+
             home.file.".zshrc" = {
-              source = ./.zshrc;
+              text = "";
               force = true;
             };
 

@@ -9,7 +9,8 @@
     };
   };
 
-  outputs = { home-manager, nixpkgs, ... }:
+  outputs =
+    { home-manager, nixpkgs, ... }:
     let
       username = "derek";
       homeDirectory = "/home/derek";
@@ -64,6 +65,10 @@
           pkgs.nixfmt
           pkgs.ripgrep
           pkgs.zsh
+          pkgs.magic-wormhole-rs
+          pkgs.lemonade
+          pkgs.direnv
+          pkgs.postgresql_18
           lazyvim
         ];
     in
@@ -82,8 +87,10 @@
 
             programs.git = {
               enable = true;
-              userName = "dwerkjem";
-              userEmail = "derekrneilson@gmail.com";
+              settings.user = {
+                name = "dwerkjem";
+                email = "derekrneilson@gmail.com";
+              };
             };
 
             programs.home-manager.enable = true;

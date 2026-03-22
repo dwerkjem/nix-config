@@ -36,7 +36,6 @@
         system:
         let
           pkgs = mkPkgs system;
-          postgresPackage = pkgs.postgresql_18;
           # Keep Python CLI tooling bundled under one interpreter to avoid
           # Home Manager path collisions between multiple Python versions.
           python313Env = pkgs.python313.withPackages (
@@ -97,7 +96,6 @@
           zsh
           magic-wormhole-rs
           direnv
-          postgresPackage
           lazyvim
           nodejs
           nodenv

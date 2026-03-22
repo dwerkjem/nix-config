@@ -17,79 +17,7 @@
     pkgs = mkPkgs "x86_64-linux";
     modules = [
       (
-        { pkgs, lib, ... }:
-        let
-          postgresPackage = pkgs.postgresql_18;
-          postgresDataDir = "${homeDirectory}/.local/share/postgresql/18";
-          postgresSocketDir = "%t/postgresql";
-          postgresDatabase = "mental-math-db";
-          postgresPasswordFile = "${homeDirectory}/.config/postgresql/role-password";
-          postgresHba = pkgs.writeText "pg_hba.conf" ''
-            # TYPE  DATABASE        USER            ADDRESS                 METHOD
-            local   all             all                                     scram-sha-256
-          '';
-          postgresInit = pkgs.writeShellScript "postgres-init" ''
-            set -euo pipefail
-
-            export PATH=${lib.makeBinPath [
-              postgresPackage
-              pkgs.coreutils
-            ]}
-            export PGDATA="${postgresDataDir}"
-            export PGHOST="$XDG_RUNTIME_DIR/postgresql"
-            export POSTGRES_PASSWORD_FILE="${postgresPasswordFile}"
-
-            mkdir -p "$PGDATA" "$PGHOST"
-            chmod 700 "$PGDATA" "$PGHOST"
-
-            if [ ! -s "$PGDATA/PG_VERSION" ]; then
-              initdb \
-                --pgdata="$PGDATA" \
-                --auth-local=peer \
-                --auth-host=scram-sha-256 \
-                --encoding=UTF8
-
-              pg_ctl \
-                --pgdata="$PGDATA" \
-                --options="-k $PGHOST -c listen_addresses=" \
-                --wait \
-                start
-
-              pg_ctl --pgdata="$PGDATA" --wait stop
-            fi
-
-            pg_ctl \
-              --pgdata="$PGDATA" \
-              --options="-k $PGHOST -c listen_addresses=" \
-              --wait \
-              start
-
-            db_exists="$(
-              psql --host="$PGHOST" --dbname=postgres -tAc \
-                "SELECT 1 FROM pg_database WHERE datname = '${postgresDatabase}'"
-            )"
-
-            if [ "$db_exists" != "1" ]; then
-              createdb --host="$PGHOST" "${postgresDatabase}"
-            fi
-
-            if [ -f "$POSTGRES_PASSWORD_FILE" ]; then
-              role_password="$(tr -d '\n' < "$POSTGRES_PASSWORD_FILE")"
-
-              if [ -n "$role_password" ]; then
-                psql \
-                  --host="$PGHOST" \
-                  --dbname=postgres \
-                  --set=role_password="$role_password" \
-                  <<'SQL'
-ALTER ROLE "${username}" WITH PASSWORD :'role_password';
-SQL
-              fi
-            fi
-
-            pg_ctl --pgdata="$PGDATA" --wait stop
-          '';
-        in
+        { ... }:
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
@@ -98,30 +26,6 @@ SQL
           home.packages = mkPackages "x86_64-linux";
 
           systemd.user.startServices = "sd-switch";
-          systemd.user.services.postgresql = {
-            Unit = {
-              Description = "PostgreSQL user service";
-              After = [ "network.target" ];
-            };
-            Service = {
-              Type = "notify";
-              ExecStartPre = postgresInit;
-              ExecStart = ''
-                ${postgresPackage}/bin/postgres \
-                  -D ${postgresDataDir} \
-                  -k ${postgresSocketDir} \
-                  -c listen_addresses= \
-                  -c hba_file=${postgresHba} \
-                  -c password_encryption=scram-sha-256
-              '';
-              ExecReload = "${postgresPackage}/bin/pg_ctl reload -D ${postgresDataDir}";
-              Restart = "on-failure";
-              TimeoutSec = 120;
-            };
-            Install = {
-              WantedBy = [ "default.target" ];
-            };
-          };
 
           programs.zsh = {
             enable = true;
@@ -149,7 +53,6 @@ SQL
                   XDG_DATA_DIRS="$HOME/.nix-profile/share:$XDG_DATA_DIRS"
               fi
 
-              export PGHOST="''${XDG_RUNTIME_DIR:-/run/user/$UID}/postgresql"
               export EDITOR="$HOME/.nix-profile/bin/nvim"
               export VISUAL="$HOME/.nix-profile/bin/nvim"
               export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"
@@ -174,25 +77,6 @@ SQL
       )
     ];
   };
-
-  # Reusable PostgreSQL module for machines that consume this flake as a
-  # NixOS input. Keep local socket auth tied to the OS user and require
-  # password-based SCRAM auth for TCP connections.
-  nixosModules.postgresql-secure-auth =
-    { lib, pkgs, ... }:
-    {
-      services.postgresql = {
-        enable = lib.mkDefault true;
-        package = pkgs.postgresql_18;
-        settings.password_encryption = "scram-sha-256";
-        authentication = lib.mkOverride 10 ''
-          # TYPE  DATABASE        USER            ADDRESS                 METHOD
-          local   all             all                                     scram-sha-256
-          host    all             all             127.0.0.1/32            scram-sha-256
-          host    all             all             ::1/128                 scram-sha-256
-        '';
-      };
-    };
 
   packages = forAllSystems (
     system:

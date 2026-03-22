@@ -104,6 +104,8 @@
           python313Env
           poetry
           vscode
+          docker-compose
+          docker
         ];
     in
     import ./flake-outputs.nix {

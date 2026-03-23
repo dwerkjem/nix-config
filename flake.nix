@@ -104,6 +104,9 @@
           vscode
           docker-compose
           docker
+          musl
+          gnupg
+          wget
         ];
     in
     import ./flake-outputs.nix {

@@ -36,26 +36,6 @@
         system:
         let
           pkgs = mkPkgs system;
-          gdrive = pkgs.stdenvNoCC.mkDerivation rec {
-            pname = "gdrive";
-            version = "2.1.1";
-
-            src = pkgs.fetchurl {
-              url = "https://github.com/prasmussen/gdrive/releases/download/${version}/gdrive_${version}_linux_amd64.tar.gz";
-              sha256 = "sha256-TGBOSvU3I/P4tfucIaZmJEvSpssbK22iYmew362T/Hg=";
-            };
-
-            nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-            buildInputs = [ pkgs.musl ];
-
-            sourceRoot = ".";
-
-            installPhase = ''
-              runHook preInstall
-              install -Dm755 gdrive $out/bin/gdrive
-              runHook postInstall
-            '';
-          };
           # Keep Python CLI tooling bundled under one interpreter to avoid
           # Home Manager path collisions between multiple Python versions.
           python313Env = pkgs.python313.withPackages (
@@ -124,8 +104,7 @@
           vscode
           docker-compose
           docker
-          musl
-          gdrive
+          rclone
           gnupg
           wget
         ];

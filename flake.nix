@@ -42,7 +42,7 @@
 
             src = pkgs.fetchurl {
               url = "https://github.com/prasmussen/gdrive/releases/download/${version}/gdrive_${version}_linux_amd64.tar.gz";
-              sha256 = "sha256-BI10g1c4+X8rH4ZBt0a9DqhrZ+8vt6Ff3eN3S1nU3I4=";
+              sha256 = "sha256-TGBOSvU3I/P4tfucIaZmJEvSpssbK22iYmew362T/Hg=";
             };
 
             nativeBuildInputs = [ pkgs.autoPatchelfHook ];

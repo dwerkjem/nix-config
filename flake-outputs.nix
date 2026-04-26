@@ -27,7 +27,7 @@
     modules = [
       sops-nix.homeManagerModules.sops
       (
-        { config, lib, pkgs, ... }:
+        { lib, pkgs, ... }:
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
@@ -86,36 +86,11 @@
             text = "";
             force = true;
           };
-
-          home.file.".config/obsidian/.keep".text = "";
-
           programs.git = {
             enable = true;
             settings.user = {
               name = gitName;
               email = email;
-            };
-          };
-
-          sops = {
-            defaultSopsFile = secretsFile;
-            age = {
-              keyFile = "${homeDirectory}/.config/sops/age/keys.txt";
-            };
-
-            secrets = {
-              "obsidian/email" = { };
-              "obsidian/password" = { };
-              "obsidian/encryption-key" = { };
-            };
-
-            templates."obsidian-secrets.env" = {
-              path = "${homeDirectory}/.config/obsidian/obsidian-secrets.env";
-              content = ''
-                OBSIDIAN_EMAIL=${config.sops.placeholder."obsidian/email"}
-                OBSIDIAN_PASSWORD=${config.sops.placeholder."obsidian/password"}
-                OBSIDIAN_ENCRYPTION_KEY=${config.sops.placeholder."obsidian/encryption-key"}
-              '';
             };
           };
 

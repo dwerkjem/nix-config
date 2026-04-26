@@ -17,13 +17,18 @@
     pkgs = mkPkgs "x86_64-linux";
     modules = [
       (
-        { ... }:
+        { pkgs, ... }:
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
           home.stateVersion = "25.05";
 
           home.packages = mkPackages "x86_64-linux";
+
+          home.sessionVariables = {
+            SHELL = "${pkgs.zsh}/bin/zsh";
+            TERMINAL = "${pkgs.alacritty}/bin/alacritty";
+          };
 
           systemd.user.startServices = "sd-switch";
 
@@ -57,6 +62,13 @@
               export VISUAL="$HOME/.nix-profile/bin/nvim"
               export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"
             '';
+          };
+
+          programs.alacritty = {
+            enable = true;
+            settings = {
+              shell.program = "${pkgs.zsh}/bin/zsh";
+            };
           };
 
           home.file.".zshrc" = {

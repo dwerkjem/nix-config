@@ -37,6 +37,10 @@
         system:
         let
           pkgs = mkPkgs system;
+          vivaldiWithCodecs = pkgs.vivaldi.override {
+            proprietaryCodecs = true;
+            enableWidevine = true;
+          };
           # Keep Python CLI tooling bundled under one interpreter to avoid
           # Home Manager path collisions between multiple Python versions.
           python313Env = pkgs.python313.withPackages (
@@ -92,7 +96,7 @@
           # General packages and tools
           fd
           git
-          vivaldi
+          vivaldiWithCodecs
           nixfmt
           ripgrep
           zsh

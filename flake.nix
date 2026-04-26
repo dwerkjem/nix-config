@@ -7,10 +7,19 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { home-manager, nixpkgs, ... }:
+    {
+      home-manager,
+      nixpkgs,
+      sops-nix,
+      ...
+    }:
     let
       #-- USER CONFIGURATION --#
       # CHANGE THESE TO YOUR OWN VALUES BEFORE USING THIS FLAKE
@@ -112,12 +121,15 @@
           rclone
           gnupg
           wget
+          age
+          sops
         ];
     in
     (import ./flake-outputs.nix {
       inherit
         home-manager
         nixpkgs
+        sops-nix
         username
         homeDirectory
         gitName
@@ -127,6 +139,5 @@
         packageSetName
         forAllSystems
         ;
-    })
-    ;
+    });
 }

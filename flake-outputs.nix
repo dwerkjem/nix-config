@@ -1,6 +1,7 @@
 {
   home-manager,
   nixpkgs,
+  sops-nix,
   username,
   homeDirectory,
   gitName,
@@ -16,6 +17,7 @@
   homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
     pkgs = mkPkgs "x86_64-linux";
     modules = [
+      sops-nix.homeManagerModules.sops
       (
         { pkgs, ... }:
         {
@@ -81,6 +83,12 @@
             settings.user = {
               name = gitName;
               email = email;
+            };
+          };
+
+          sops = {
+            age = {
+              keyFile = "${homeDirectory}/.config/sops/age/keys.txt";
             };
           };
 

@@ -4,10 +4,16 @@
   sops-nix,
   username,
   homeDirectory,
+  stateVersion,
+  enableDesktop,
   gitName,
   email,
   mkPkgs,
+  mkBasePackages,
+  mkDesktopPackages,
   mkPackages,
+  basePackageSetName,
+  desktopPackageSetName,
   packageSetName,
   forAllSystems,
 }:
@@ -19,16 +25,17 @@
     modules = [
       sops-nix.homeManagerModules.sops
       (
-        { pkgs, ... }:
+        { lib, pkgs, ... }:
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
-          home.stateVersion = "25.05";
+          home.stateVersion = stateVersion;
 
-          home.packages = mkPackages "x86_64-linux";
+          home.packages = mkPackages "x86_64-linux" enableDesktop;
 
           home.sessionVariables = {
             SHELL = "${pkgs.zsh}/bin/zsh";
+          } // lib.optionalAttrs enableDesktop {
             TERMINAL = "${pkgs.alacritty}/bin/alacritty";
           };
 
@@ -43,7 +50,7 @@
             };
 
             shellAliases = {
-              update-system = "nix run github:nix-community/home-manager -- switch --flake $HOME/nix-config#$USER";
+              update-system = "nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER";
               wormhole = "wormhole-rs";
               nv = "nvim";
             };
@@ -66,7 +73,7 @@
             '';
           };
 
-          programs.alacritty = {
+          programs.alacritty = lib.mkIf enableDesktop {
             enable = true;
             settings = {
               shell.program = "${pkgs.zsh}/bin/zsh";
@@ -106,7 +113,17 @@
     {
       default = pkgs.buildEnv {
         name = packageSetName;
-        paths = mkPackages system;
+        paths = mkPackages system enableDesktop;
+      };
+
+      Desktop = pkgs.buildEnv {
+        name = desktopPackageSetName;
+        paths = (mkBasePackages system) ++ (mkDesktopPackages system);
+      };
+
+      base = pkgs.buildEnv {
+        name = basePackageSetName;
+        paths = mkBasePackages system;
       };
     }
   );
@@ -118,7 +135,7 @@
     in
     {
       default = pkgs.mkShell {
-        packages = mkPackages system;
+        packages = mkPackages system enableDesktop;
       };
     }
   );

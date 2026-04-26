@@ -1,0 +1,8 @@
+{
+  fullName = "Your Name";
+  gitName = "your-git-name";
+  email = "you@example.com";
+  username = "user";
+  stateVersion = "25.05";
+  enableDesktop = true;
+}

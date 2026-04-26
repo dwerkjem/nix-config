@@ -4,19 +4,21 @@ Reusable Home Manager flake for Derek's machines.
 
 It provides:
 
-- A Home Manager profile with common CLI and desktop tools
+- A Home Manager profile with a server-safe base plus an optional desktop layer
 - A packaged LazyVim-based `nvim`
 - Git and Zsh configuration
 - `sops-nix` scaffolding for encrypted per-user secrets
 
 ## Layout
 
-- [flake.nix](/home/derekrn/nix-config/flake.nix): top-level inputs, user settings, shared package helpers
+- [flake.nix](/home/derekrn/nix-config/flake.nix): top-level inputs, options loading, shared package helpers
 - [flake-outputs.nix](/home/derekrn/nix-config/flake-outputs.nix): Home Manager outputs, shell configuration, dev shell, package outputs
+- [options.defaults.nix](/home/derekrn/nix-config/options.defaults.nix): tracked fallback values used when no local options file exists
+- [options.nix.example](/home/derekrn/nix-config/options.nix.example): example local overrides file to copy to `options.nix`
 
 ## Included tools
 
-The default package set currently includes:
+The shared base package set includes:
 
 - `fd`
 - `git`
@@ -30,9 +32,14 @@ The default package set currently includes:
 - `nodenv`
 - Python 3.13 with `pip`, `virtualenv`, `wheel`, `setuptools`, `black`, and `isort`
 - `poetry`
-- `vscode`
 - `age`
 - `sops`
+
+The optional desktop layer adds:
+
+- `vivaldi` with proprietary codecs and Widevine
+- `vscode`
+- Alacritty Home Manager configuration
 
 ## sops-nix
 
@@ -61,14 +68,23 @@ points at your encrypted `secrets/secrets.yaml`.
 
 ## User configuration
 
-The flake currently hardcodes these values near the top of [flake.nix](/home/derekrn/nix-config/flake.nix):
+User-editable values now live in an ignored local file named `options.nix`.
+Start by copying [options.nix.example](/home/derekrn/nix-config/options.nix.example)
+to `options.nix`, then update the values there.
+
+The tracked defaults/example include:
 
 - `fullName`
 - `gitName`
 - `email`
 - `username`
+- `stateVersion`
+- `enableDesktop`
 
-If this repo is reused for another machine or user, update those values first.
+The flake falls back to [options.defaults.nix](/home/derekrn/nix-config/options.defaults.nix)
+when `options.nix` is missing, so the repo still evaluates cleanly without
+committing personal settings. Set `enableDesktop = false;` in `options.nix` on
+servers to keep only the base package set and skip desktop-specific config.
 
 ## Apply the configuration
 
@@ -81,18 +97,27 @@ update-system
 That expands to:
 
 ```bash
-nix run github:nix-community/home-manager -- switch --flake $HOME/nix-config#$USER
+nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER
 ```
+
+## Package outputs
+
+The flake exposes these package bundles:
+
+- `.#default`: base plus desktop when `enableDesktop = true`, otherwise base only
+- `.#Desktop`: the full desktop bundle regardless of local toggle
+- `.#base`: the server-safe base bundle
 
 ## Validation
 
 Check the flake without building everything:
 
 ```bash
-nix flake check --no-build
+nix flake check --impure --no-build
 ```
 
 ## Notes
 
-- Flakes only see files tracked by Git, so new imported files must be added to the repo.
+- The ignored `options.nix` file is loaded impurely from `$NIX_CONFIG_DIR/options.nix`
+  or `$HOME/nix-config/options.nix`, so commands that evaluate the flake should use `--impure`.
 - The repo may show `warning: Git tree ... is dirty` during local work; that is expected while editing.

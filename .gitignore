@@ -2,3 +2,4 @@ result
 .codex
 .direnv
 secrets/secrets.yaml
+options.nix

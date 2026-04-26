@@ -21,15 +21,28 @@
       ...
     }:
     let
-      #-- USER CONFIGURATION --#
-      # CHANGE THESE TO YOUR OWN VALUES BEFORE USING THIS FLAKE
-      fullName = "Derek R. Neilson";
-      gitName = "dwerkjem";
-      email = "derekrneilson@gmail.com";
-      username = "derekrn";
-      #-- END OF USER CONFIGURATION--#
+      defaultOptions = import ./options.defaults.nix;
+      configDirectory =
+        let
+          configured = builtins.getEnv "NIX_CONFIG_DIR";
+          home = builtins.getEnv "HOME";
+        in
+        if configured != "" then configured else "${home}/nix-config";
+      localOptionsPath = "${configDirectory}/options.nix";
+      localOptions =
+        if builtins.pathExists localOptionsPath then import localOptionsPath else { };
+      options = defaultOptions // localOptions;
+      fullName = options.fullName;
+      gitName = options.gitName;
+      email = options.email;
+      username = options.username;
+      stateVersion = options.stateVersion;
+      enableDesktop = options.enableDesktop;
       homeDirectory = "/home/${username}";
-      packageSetName = "${username}-global-tools";
+      basePackageSetName = "${username}-base-tools";
+      desktopPackageSetName = "${username}-desktop-tools";
+      packageSetName =
+        if enableDesktop then desktopPackageSetName else basePackageSetName;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -41,14 +54,10 @@
           inherit system;
           config.allowUnfree = true;
         };
-      mkPackages =
+      mkBasePackages =
         system:
         let
           pkgs = mkPkgs system;
-          vivaldiWithCodecs = pkgs.vivaldi.override {
-            proprietaryCodecs = true;
-            enableWidevine = true;
-          };
           # Keep Python CLI tooling bundled under one interpreter to avoid
           # Home Manager path collisions between multiple Python versions.
           python313Env = pkgs.python313.withPackages (
@@ -104,7 +113,6 @@
           # General packages and tools
           fd
           git
-          vivaldiWithCodecs
           nixfmt
           ripgrep
           zsh
@@ -115,15 +123,34 @@
           nodenv
           python313Env
           poetry
-          vscode
           docker-compose
           docker
           rclone
           gnupg
+          vscode
           wget
           age
           sops
         ];
+      mkDesktopPackages =
+        system:
+        let
+          pkgs = mkPkgs system;
+          vivaldiWithCodecs = pkgs.vivaldi.override {
+            proprietaryCodecs = true;
+            enableWidevine = true;
+          };
+        in
+        with pkgs;
+        [
+          # Desktop-specific applications and tools
+          vivaldiWithCodecs
+          
+        ];
+      mkPackages =
+        system: desktopEnabled:
+        (mkBasePackages system)
+        ++ nixpkgs.lib.optionals desktopEnabled (mkDesktopPackages system);
     in
     (import ./flake-outputs.nix {
       inherit
@@ -132,10 +159,16 @@
         sops-nix
         username
         homeDirectory
+        stateVersion
+        enableDesktop
         gitName
         email
         mkPkgs
+        mkBasePackages
+        mkDesktopPackages
         mkPackages
+        basePackageSetName
+        desktopPackageSetName
         packageSetName
         forAllSystems
         ;

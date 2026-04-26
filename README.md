@@ -97,7 +97,7 @@ update-system
 That expands to:
 
 ```bash
-nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER
+NIX_CONFIG_DIR=$HOME/nix-config nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER
 ```
 
 ## Package outputs
@@ -118,6 +118,7 @@ nix flake check --impure --no-build
 
 ## Notes
 
-- The ignored `options.nix` file is loaded impurely from `$NIX_CONFIG_DIR/options.nix`
-  or `$HOME/nix-config/options.nix`, so commands that evaluate the flake should use `--impure`.
+- The ignored `options.nix` file is loaded impurely from `$NIX_CONFIG_DIR/options.nix`,
+  then `$PWD/options.nix` when present, and finally `$HOME/nix-config/options.nix`, so
+  commands that evaluate the flake should use `--impure`.
 - The repo may show `warning: Git tree ... is dirty` during local work; that is expected while editing.

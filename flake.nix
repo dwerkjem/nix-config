@@ -25,10 +25,25 @@
       configDirectory =
         let
           configured = builtins.getEnv "NIX_CONFIG_DIR";
+          pwd = builtins.getEnv "PWD";
           home = builtins.getEnv "HOME";
         in
-        if configured != "" then configured else "${home}/nix-config";
+        if configured != "" then
+          configured
+        else if builtins.pathExists "${pwd}/options.nix" then
+          pwd
+        else
+          "${home}/nix-config";
       localOptionsPath = "${configDirectory}/options.nix";
+      secretsFilePath = "${configDirectory}/secrets/secrets.yaml";
+      secretsFile =
+        if builtins.pathExists secretsFilePath then
+          builtins.path {
+            path = secretsFilePath;
+            name = "nix-config-secrets.yaml";
+          }
+        else
+          null;
       localOptions =
         if builtins.pathExists localOptionsPath then import localOptionsPath else { };
       options = defaultOptions // localOptions;
@@ -145,7 +160,12 @@
         [
           # Desktop-specific applications and tools
           vivaldiWithCodecs
-          
+          discord
+          steam
+          spotify
+          timewarrior
+          taskwarrior3
+          obsidian
         ];
       mkPackages =
         system: desktopEnabled:
@@ -157,6 +177,8 @@
         home-manager
         nixpkgs
         sops-nix
+        configDirectory
+        secretsFile
         username
         homeDirectory
         stateVersion

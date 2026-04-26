@@ -145,6 +145,7 @@
           vscode
           wget
           age
+          parted
           sops
         ];
       mkDesktopPackages =
@@ -166,6 +167,7 @@
           timewarrior
           taskwarrior3
           obsidian
+          gnome-disk-utility
         ];
       mkPackages =
         system: desktopEnabled:

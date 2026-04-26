@@ -26,7 +26,7 @@ let
 
       tmp="$(mktemp)"
 
-      awk \
+      ${lib.getExe pkgs.gawk} \
         -v section="$section" \
         -v key="$key" \
         -v value="$value" \

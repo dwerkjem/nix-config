@@ -1,3 +1,4 @@
+
 {
   description = "Reusable home-manager flake built for servers. Includes a set of common tools and packages I use across all my machines, and is designed to unify and simplify configuration management.";
 
@@ -17,7 +18,7 @@
       fullName = "Derek R. Neilson";
       gitName = "dwerkjem";
       email = "derekrneilson@gmail.com";
-      username = "derek";
+      username = "derekrn";
       #-- END OF USER CONFIGURATION--#
       homeDirectory = "/home/${username}";
       packageSetName = "${username}-global-tools";
@@ -91,6 +92,7 @@
           # General packages and tools
           fd
           git
+          vivaldi
           nixfmt
           ripgrep
           zsh

@@ -69,7 +69,19 @@ nix flake check --no-build
 
 `keybinds.nix` manages Kanata in one place. It installs `kanata-with-cmd`, writes `~/.config/kanata/kanata.kbd`, and starts a Home Manager user service for it.
 
-Kanata needs access to input devices and `uinput`. If this is used outside a NixOS system service setup, the user service may still need local permissions on the host machine.
+Kanata also needs host-side access to input devices and `uinput`. This repo exposes a reusable NixOS module at `inputs.nix-config.nixosModules.kanataHost`.
+
+Import it from your NixOS host configuration:
+
+```nix
+{
+  imports = [
+    inputs.nix-config.nixosModules.kanataHost
+  ];
+}
+```
+
+Then rebuild the system and log back in so the new `input` and `uinput` group membership takes effect.
 
 The current bindings are:
 

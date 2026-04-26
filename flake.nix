@@ -1,4 +1,3 @@
-
 {
   description = "Reusable home-manager flake built for servers. Includes a set of common tools and packages I use across all my machines, and is designed to unify and simplify configuration management.";
 
@@ -115,7 +114,7 @@
           wget
         ];
     in
-    import ./flake-outputs.nix {
+    (import ./flake-outputs.nix {
       inherit
         home-manager
         nixpkgs
@@ -128,5 +127,25 @@
         packageSetName
         forAllSystems
         ;
+    })
+    // {
+      nixosModules.kanataHost =
+        { lib, pkgs, ... }:
+        {
+          boot.kernelModules = [ "uinput" ];
+
+          users.groups.uinput = { };
+
+          users.users.${username}.extraGroups = lib.mkAfter [
+            "input"
+            "uinput"
+          ];
+
+          services.udev.extraRules = ''
+            KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
+          '';
+
+          environment.systemPackages = [ pkgs.kanata ];
+        };
     };
 }

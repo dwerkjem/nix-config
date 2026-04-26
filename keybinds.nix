@@ -11,7 +11,7 @@ let
 
     (defalias
       cap (tap-hold 200 200 esc lctl)
-      open-terminal (cmd ${pkgs.alacritty}/bin/alacritty -e ${pkgs.zsh}/bin/zsh)
+      open-terminal (cmd ${pkgs.alacritty}/bin/alacritty)
       t-action (switch
         ((or
           (and lctl lalt)
@@ -21,7 +21,7 @@ let
         () t break))
 
     (deflayer base
-      @cap lctl lalt ralt rctl @t-action))
+      @cap lctl lalt ralt rctl @t-action)
   '';
 in
 {

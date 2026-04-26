@@ -12,7 +12,6 @@ It provides:
 
 - [flake.nix](/home/derek/nix-config/flake.nix): top-level inputs, user settings, shared package helpers
 - [flake-outputs.nix](/home/derek/nix-config/flake-outputs.nix): Home Manager outputs, shell configuration, dev shell, package outputs
-- [keybinds.nix](/home/derekrn/nix-config/keybinds.nix): Kanata config, package install, and user service
 
 ## Included tools
 
@@ -64,29 +63,6 @@ Check the flake without building everything:
 ```bash
 nix flake check --no-build
 ```
-
-## Keyboard config
-
-`keybinds.nix` manages Kanata in one place. It installs `kanata-with-cmd`, writes `~/.config/kanata/kanata.kbd`, and starts a Home Manager user service for it.
-
-Kanata also needs host-side access to input devices and `uinput`. This repo exposes a reusable NixOS module at `inputs.nix-config.nixosModules.kanataHost`.
-
-Import it from your NixOS host configuration:
-
-```nix
-{
-  imports = [
-    inputs.nix-config.nixosModules.kanataHost
-  ];
-}
-```
-
-Then rebuild the system and log back in so the new `input` and `uinput` group membership takes effect.
-
-The current bindings are:
-
-- `Caps Lock`: tap for `Escape`, hold for `Left Control`
-- `Ctrl` + `Alt` + `T`: launch Alacritty with `zsh`
 
 ## Notes
 

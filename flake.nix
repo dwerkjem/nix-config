@@ -128,24 +128,5 @@
         forAllSystems
         ;
     })
-    // {
-      nixosModules.kanataHost =
-        { lib, pkgs, ... }:
-        {
-          boot.kernelModules = [ "uinput" ];
-
-          users.groups.uinput = { };
-
-          users.users.${username}.extraGroups = lib.mkAfter [
-            "input"
-            "uinput"
-          ];
-
-          services.udev.extraRules = ''
-            KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
-          '';
-
-          environment.systemPackages = [ pkgs.kanata ];
-        };
-    };
+    ;
 }

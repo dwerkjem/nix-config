@@ -16,7 +16,6 @@
   homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
     pkgs = mkPkgs "x86_64-linux";
     modules = [
-      ./keybinds.nix
       (
         { pkgs, ... }:
         {

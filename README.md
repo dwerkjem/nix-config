@@ -32,6 +32,8 @@ The shared base package set includes:
 - `nodenv`
 - Python 3.13 with `pip`, `virtualenv`, `wheel`, `setuptools`, `black`, and `isort`
 - `poetry`
+- `taskwarrior3`
+- `timewarrior`
 - `age`
 - `sops`
 

@@ -94,6 +94,20 @@
             };
           };
 
+          programs.taskwarrior = {
+            enable = true;
+            package = pkgs.taskwarrior3;
+            extraConfig = ''
+              uda.reviewed.type=date
+              urgency.user.tag.next.coefficient=15
+            '';
+          };
+
+          home.file.".task/hooks/on-modify.timewarrior" = {
+            source = "${pkgs.timewarrior}/share/doc/timew/ext/on-modify.timewarrior";
+            executable = true;
+          };
+
           programs.home-manager.enable = true;
         }
       )

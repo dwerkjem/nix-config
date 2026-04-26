@@ -138,6 +138,9 @@
           nodenv
           python313Env
           poetry
+          taskwarrior3
+          timewarrior
+          taskwarrior-tui
           docker-compose
           docker
           rclone
@@ -164,8 +167,6 @@
           discord
           steam
           spotify
-          timewarrior
-          taskwarrior3
           obsidian
           gnome-disk-utility
         ];

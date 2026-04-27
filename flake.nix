@@ -150,6 +150,15 @@
           age
           parted
           sops
+          qtcreator
+          cmake
+          ninja
+          gcc
+          qt6.qtbase
+          qt6.qttools
+          qt6.qtmultimedia
+          qt6.qtsvg
+
         ];
       mkDesktopPackages =
         system:

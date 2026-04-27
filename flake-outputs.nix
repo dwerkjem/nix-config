@@ -145,6 +145,9 @@
     {
       default = pkgs.mkShell {
         packages = mkPackages system enableDesktop;
+        shellHook = ''
+          export CMAKE_PREFIX_PATH="${pkgs.qt6.qtbase}:${pkgs.qt6.qtdeclarative}:${pkgs.qt6.qtmultimedia}:${pkgs.qt6.qtsvg}:$CMAKE_PREFIX_PATH"
+        '';
       };
     }
   );

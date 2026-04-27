@@ -69,6 +69,20 @@
           inherit system;
           config.allowUnfree = true;
         };
+      mkQtPackages =
+        pkgs:
+        with pkgs;
+        [
+          qtcreator
+          cmake
+          ninja
+          gcc
+          qt6.qtbase
+          qt6.qttools
+          qt6.qtmultimedia
+          qt6.qtsvg
+          qt6.qtdeclarative
+        ];
       mkBasePackages =
         system:
         let
@@ -150,17 +164,8 @@
           age
           parted
           sops
-          qtcreator
-          cmake
-          ninja
-          gcc
-          qt6.qtbase
-          qt6.qttools
-          qt6.qtmultimedia
-          qt6.qtsvg
-          qt6.qtdeclarative
-
-        ];
+        ]
+        ++ (mkQtPackages pkgs);
       mkDesktopPackages =
         system:
         let
@@ -199,6 +204,7 @@
         gitName
         email
         mkPkgs
+        mkQtPackages
         mkBasePackages
         mkDesktopPackages
         mkPackages

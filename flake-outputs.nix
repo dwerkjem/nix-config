@@ -11,6 +11,7 @@
   gitName,
   email,
   mkPkgs,
+  mkQtPackages,
   mkBasePackages,
   mkDesktopPackages,
   mkPackages,
@@ -28,6 +29,17 @@
       sops-nix.homeManagerModules.sops
       (
         { lib, pkgs, ... }:
+        let
+          qtPackages = mkQtPackages pkgs;
+          qtCmakePrefixPath = pkgs.lib.makeSearchPath "" [
+            pkgs.qt6.qtbase
+            pkgs.qt6.qtdeclarative
+            pkgs.qt6.qtmultimedia
+            pkgs.qt6.qtsvg
+          ];
+          qtPluginPath = pkgs.lib.makeSearchPath "lib/qt-6/plugins" qtPackages;
+          qtQmlImportPath = pkgs.lib.makeSearchPath "lib/qt-6/qml" qtPackages;
+        in
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
@@ -37,6 +49,9 @@
 
           home.sessionVariables = {
             SHELL = "${pkgs.zsh}/bin/zsh";
+            CMAKE_PREFIX_PATH = qtCmakePrefixPath;
+            QT_PLUGIN_PATH = qtPluginPath;
+            QML2_IMPORT_PATH = qtQmlImportPath;
           } // lib.optionalAttrs enableDesktop {
             TERMINAL = "${pkgs.alacritty}/bin/alacritty";
           };
@@ -141,12 +156,18 @@
     system:
     let
       pkgs = mkPkgs system;
+      qtCmakePrefixPath = pkgs.lib.makeSearchPath "" [
+        pkgs.qt6.qtbase
+        pkgs.qt6.qtdeclarative
+        pkgs.qt6.qtmultimedia
+        pkgs.qt6.qtsvg
+      ];
     in
     {
       default = pkgs.mkShell {
         packages = mkPackages system enableDesktop;
         shellHook = ''
-          export CMAKE_PREFIX_PATH="${pkgs.qt6.qtbase}:${pkgs.qt6.qtdeclarative}:${pkgs.qt6.qtmultimedia}:${pkgs.qt6.qtsvg}:$CMAKE_PREFIX_PATH"
+          export CMAKE_PREFIX_PATH="${qtCmakePrefixPath}:$CMAKE_PREFIX_PATH"
         '';
       };
     }

@@ -158,6 +158,7 @@
           qt6.qttools
           qt6.qtmultimedia
           qt6.qtsvg
+          qt6.qtdeclarative
 
         ];
       mkDesktopPackages =

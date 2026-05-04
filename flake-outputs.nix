@@ -1,5 +1,6 @@
 {
   home-manager,
+  nixgl,
   nixpkgs,
   sops-nix,
   configDirectory,
@@ -8,6 +9,7 @@
   homeDirectory,
   stateVersion,
   enableDesktop,
+  useNvidiaNixGL,
   gitName,
   email,
   mkPkgs,
@@ -28,7 +30,7 @@
     modules = [
       sops-nix.homeManagerModules.sops
       (
-        { lib, pkgs, ... }:
+        { config, lib, pkgs, ... }:
         let
           qtPackages = mkQtPackages pkgs;
           qtCmakePrefixPath = pkgs.lib.makeSearchPath "" [
@@ -39,13 +41,29 @@
           ];
           qtPluginPath = pkgs.lib.makeSearchPath "lib/qt-6/plugins" qtPackages;
           qtQmlImportPath = pkgs.lib.makeSearchPath "lib/qt-6/qml" qtPackages;
+          desktopPackages = mkDesktopPackages "x86_64-linux";
+          desktopPackagesWithoutSteam =
+            builtins.filter
+              (package: lib.getName package != lib.getName pkgs.steam)
+              desktopPackages;
         in
         {
           home.username = username;
           home.homeDirectory = homeDirectory;
           home.stateVersion = stateVersion;
 
-          home.packages = mkPackages "x86_64-linux" enableDesktop;
+          targets.genericLinux.nixGL = {
+            packages = nixgl.packages;
+            defaultWrapper = if useNvidiaNixGL then "nvidia" else "mesa";
+            vulkan.enable = true;
+          };
+
+          home.packages =
+            (mkBasePackages "x86_64-linux")
+            ++ lib.optionals enableDesktop (
+              desktopPackagesWithoutSteam
+              ++ [ (config.lib.nixGL.wrap pkgs.steam) ]
+            );
 
           home.sessionVariables = {
             SHELL = "${pkgs.zsh}/bin/zsh";

@@ -5,4 +5,5 @@
   username = "user";
   stateVersion = "25.05";
   enableDesktop = false;
+  useNvidiaNixGL = false;
 }

@@ -11,11 +11,16 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       home-manager,
+      nixgl,
       nixpkgs,
       sops-nix,
       ...
@@ -53,6 +58,7 @@
       username = options.username;
       stateVersion = options.stateVersion;
       enableDesktop = options.enableDesktop;
+      useNvidiaNixGL = options.useNvidiaNixGL;
       homeDirectory = "/home/${username}";
       basePackageSetName = "${username}-base-tools";
       desktopPackageSetName = "${username}-desktop-tools";
@@ -184,6 +190,7 @@
           sops
 
           # Disk and system tools
+          htop
           parted
         ]
         ++ (mkQtPackages pkgs);
@@ -222,6 +229,7 @@
     (import ./flake-outputs.nix {
       inherit
         home-manager
+        nixgl
         nixpkgs
         sops-nix
         configDirectory
@@ -230,6 +238,7 @@
         homeDirectory
         stateVersion
         enableDesktop
+        useNvidiaNixGL
         gitName
         email
         mkPkgs

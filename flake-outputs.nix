@@ -41,6 +41,12 @@
           ];
           qtPluginPath = pkgs.lib.makeSearchPath "lib/qt-6/plugins" qtPackages;
           qtQmlImportPath = pkgs.lib.makeSearchPath "lib/qt-6/qml" qtPackages;
+          isIntelX86Platform = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
+          nixglPackages = import nixgl {
+            inherit pkgs;
+            enable32bits = isIntelX86Platform;
+            enableIntelX86Extensions = isIntelX86Platform;
+          };
           desktopPackages = mkDesktopPackages "x86_64-linux";
           desktopPackagesWithoutSteam =
             builtins.filter
@@ -53,7 +59,7 @@
           home.stateVersion = stateVersion;
 
           targets.genericLinux.nixGL = {
-            packages = nixgl.packages;
+            packages = nixglPackages;
             defaultWrapper = if useNvidiaNixGL then "nvidia" else "mesa";
             vulkan.enable = true;
           };
@@ -117,11 +123,17 @@
 
           programs.git = {
             enable = true;
-            ignores = [ ".codex" ];
             settings.user = {
               name = gitName;
               email = email;
             };
+          };
+
+          xdg.configFile."git/ignore" = {
+            text = ''
+              .codex
+            '';
+            force = true;
           };
 
           programs.taskwarrior = {

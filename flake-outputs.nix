@@ -97,10 +97,6 @@
             };
           };
 
-          home.file.".zshrc" = {
-            text = "";
-            force = true;
-          };
           programs.git = {
             enable = true;
             settings.user = {

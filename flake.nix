@@ -73,10 +73,12 @@
         pkgs:
         with pkgs;
         [
-          qtcreator
+          # Build tools
           cmake
           ninja
           gcc
+
+          # Qt libraries and tooling
           qt6.qtbase
           qt6.qttools
           qt6.qtmultimedia
@@ -139,31 +141,50 @@
         in
         with pkgs;
         [
-          # General packages and tools
-          fd
+          # Shell and environment
+          zsh
+          direnv
+
+          # Editors and IDEs
+          lazyvim
+          vscode
+
+          # Version control and Nix
           git
           nixfmt
+
+          # Search and file navigation
+          fd
           ripgrep
-          zsh
+
+          # Networking and file transfer
           magic-wormhole-rs
-          direnv
-          lazyvim
+          rclone
+          wget
+
+          # Language runtimes and package tools
           nodejs
           nodenv
+          rustc
           python313Env
           poetry
+
+          # Task and time tracking
           taskwarrior3
           timewarrior
           taskwarrior-tui
+
+          # Containers
           docker-compose
           docker
-          rclone
+
+          # Secrets and encryption
           gnupg
-          vscode
-          wget
           age
-          parted
           sops
+
+          # Disk and system tools
+          parted
         ]
         ++ (mkQtPackages pkgs);
       mkDesktopPackages =
@@ -177,12 +198,20 @@
         in
         with pkgs;
         [
-          # Desktop-specific applications and tools
+          # Browsers
           vivaldiWithCodecs
+
+          # Communication
           discord
+
+          # Gaming and media
           steam
           spotify
+
+          # Notes and knowledge
           obsidian
+
+          # Disk and system tools
           gnome-disk-utility
         ];
       mkPackages =

@@ -99,6 +99,7 @@
 
           programs.git = {
             enable = true;
+            ignores = [ ".codex" ];
             settings.user = {
               name = gitName;
               email = email;

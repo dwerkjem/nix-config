@@ -214,6 +214,7 @@
           # Gaming and media
           steam
           spotify
+          synthesia
 
           # Notes and knowledge
           obsidian

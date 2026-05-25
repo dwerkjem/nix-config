@@ -89,6 +89,12 @@
               theme = "agnoster";
               plugins = [ "git" ];
             };
+            
+            programs.direnv = {
+              enable = true;
+              nix-direnv.enable = true;
+            };
+
 
             shellAliases = {
               update-system = "NIX_CONFIG_DIR=$HOME/nix-config nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER";
@@ -107,7 +113,7 @@
               if [ -d "$HOME/.nix-profile/share" ] ; then
                   XDG_DATA_DIRS="$HOME/.nix-profile/share:$XDG_DATA_DIRS"
               fi
-              
+
               export EDITOR="$HOME/.nix-profile/bin/nvim"
               export VISUAL="$HOME/.nix-profile/bin/nvim"
               export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"

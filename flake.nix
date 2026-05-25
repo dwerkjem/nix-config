@@ -174,6 +174,7 @@
           rustc
           python313Env
           poetry
+          uv
 
           # Task and time tracking
           taskwarrior3

@@ -81,6 +81,10 @@
           };
 
           systemd.user.startServices = "sd-switch";
+              programs.direnv = {
+              enable = true;
+              nix-direnv.enable = true;
+            };
 
           programs.zsh = {
             enable = true;
@@ -89,12 +93,8 @@
               theme = "agnoster";
               plugins = [ "git" ];
             };
-            
-            programs.direnv = {
-              enable = true;
-              nix-direnv.enable = true;
-            };
 
+        
 
             shellAliases = {
               update-system = "NIX_CONFIG_DIR=$HOME/nix-config nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER";

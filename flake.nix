@@ -181,10 +181,6 @@
           timewarrior
           taskwarrior-tui
 
-          # Containers
-          docker-compose
-          docker
-
           # Secrets and encryption
           gnupg
           age

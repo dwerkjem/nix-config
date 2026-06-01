@@ -118,6 +118,7 @@
               export VISUAL="$HOME/.nix-profile/bin/nvim"
               export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"
               source $HOME/.local/bin/env
+              export PATH=~/bin:$PATH
             '';
           };
 

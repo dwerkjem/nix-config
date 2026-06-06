@@ -150,7 +150,6 @@
           # Shell and environment
           zsh
           direnv
-          ghostty
 
           # Editors and IDEs
           lazyvim

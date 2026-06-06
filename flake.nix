@@ -150,6 +150,7 @@
           # Shell and environment
           zsh
           direnv
+          ghostty
 
           # Editors and IDEs
           lazyvim
@@ -175,7 +176,8 @@
           python313Env
           poetry
           uv
-
+          gcc.cc.lib
+    
           # Task and time tracking
           taskwarrior3
           timewarrior

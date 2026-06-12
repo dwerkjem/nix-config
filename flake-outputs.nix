@@ -76,6 +76,11 @@
             CMAKE_PREFIX_PATH = qtCmakePrefixPath;
             QT_PLUGIN_PATH = qtPluginPath;
             QML2_IMPORT_PATH = qtQmlImportPath;
+
+            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              pkgs.zlib
+            ];
           } // lib.optionalAttrs enableDesktop {
             TERMINAL = "${pkgs.alacritty}/bin/alacritty";
           };

@@ -178,6 +178,8 @@
           uv
           gcc.cc.lib
           gcc
+          zlib
+
     
           # Task and time tracking
           taskwarrior3

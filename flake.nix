@@ -162,6 +162,7 @@
           # Search and file navigation
           fd
           ripgrep
+          nerd-fonts.jetbrains-mono
 
           # Networking and file transfer
           magic-wormhole-rs

@@ -177,6 +177,7 @@
           poetry
           uv
           gcc.cc.lib
+          gcc
     
           # Task and time tracking
           taskwarrior3

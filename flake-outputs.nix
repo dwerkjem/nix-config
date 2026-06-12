@@ -187,7 +187,7 @@
     }
   );
 
-  devShells = forAllSystems (
+    devShells = forAllSystems (
     system:
     let
       pkgs = mkPkgs system;
@@ -197,12 +197,36 @@
         pkgs.qt6.qtmultimedia
         pkgs.qt6.qtsvg
       ];
+
+      nativeLibraryPath = pkgs.lib.makeLibraryPath [
+        pkgs.stdenv.cc.cc.lib
+        pkgs.zlib
+      ];
     in
     {
       default = pkgs.mkShell {
         packages = mkPackages system enableDesktop;
+
         shellHook = ''
           export CMAKE_PREFIX_PATH="${qtCmakePrefixPath}:$CMAKE_PREFIX_PATH"
+          export LD_LIBRARY_PATH="${nativeLibraryPath}:$LD_LIBRARY_PATH"
+        '';
+      };
+
+      python = pkgs.mkShell {
+        packages = with pkgs; [
+          python313
+          uv
+          gcc
+          zlib
+        ];
+
+        shellHook = ''
+          export LD_LIBRARY_PATH="${nativeLibraryPath}:$LD_LIBRARY_PATH"
+
+          if [ -d .venv ]; then
+            source .venv/bin/activate
+          fi
         '';
       };
     }

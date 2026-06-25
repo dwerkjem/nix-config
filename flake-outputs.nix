@@ -76,11 +76,20 @@
             CMAKE_PREFIX_PATH = qtCmakePrefixPath;
             QT_PLUGIN_PATH = qtPluginPath;
             QML2_IMPORT_PATH = qtQmlImportPath;
+
+            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              pkgs.zlib
+            ];
           } // lib.optionalAttrs enableDesktop {
             TERMINAL = "${pkgs.alacritty}/bin/alacritty";
           };
 
           systemd.user.startServices = "sd-switch";
+              programs.direnv = {
+              enable = true;
+              nix-direnv.enable = true;
+            };
 
           programs.zsh = {
             enable = true;
@@ -89,6 +98,8 @@
               theme = "agnoster";
               plugins = [ "git" ];
             };
+
+        
 
             shellAliases = {
               update-system = "NIX_CONFIG_DIR=$HOME/nix-config nix run github:nix-community/home-manager -- switch --impure --flake $HOME/nix-config#$USER";
@@ -111,6 +122,8 @@
               export EDITOR="$HOME/.nix-profile/bin/nvim"
               export VISUAL="$HOME/.nix-profile/bin/nvim"
               export SUDO_EDITOR="$HOME/.nix-profile/bin/nvim"
+              source $HOME/.local/bin/env
+              export PATH=~/bin:$PATH
             '';
           };
 
@@ -179,7 +192,7 @@
     }
   );
 
-  devShells = forAllSystems (
+    devShells = forAllSystems (
     system:
     let
       pkgs = mkPkgs system;
@@ -189,12 +202,36 @@
         pkgs.qt6.qtmultimedia
         pkgs.qt6.qtsvg
       ];
+
+      nativeLibraryPath = pkgs.lib.makeLibraryPath [
+        pkgs.stdenv.cc.cc.lib
+        pkgs.zlib
+      ];
     in
     {
       default = pkgs.mkShell {
         packages = mkPackages system enableDesktop;
+
         shellHook = ''
           export CMAKE_PREFIX_PATH="${qtCmakePrefixPath}:$CMAKE_PREFIX_PATH"
+          export LD_LIBRARY_PATH="${nativeLibraryPath}:$LD_LIBRARY_PATH"
+        '';
+      };
+
+      python = pkgs.mkShell {
+        packages = with pkgs; [
+          python313
+          uv
+          gcc
+          zlib
+        ];
+
+        shellHook = ''
+          export LD_LIBRARY_PATH="${nativeLibraryPath}:$LD_LIBRARY_PATH"
+
+          if [ -d .venv ]; then
+            source .venv/bin/activate
+          fi
         '';
       };
     }

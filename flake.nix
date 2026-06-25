@@ -162,6 +162,7 @@
           # Search and file navigation
           fd
           ripgrep
+          nerd-fonts.jetbrains-mono
 
           # Networking and file transfer
           magic-wormhole-rs
@@ -174,15 +175,16 @@
           rustc
           python313Env
           poetry
+          uv
+          gcc.cc.lib
+          gcc
+          zlib
 
+    
           # Task and time tracking
           taskwarrior3
           timewarrior
           taskwarrior-tui
-
-          # Containers
-          docker-compose
-          docker
 
           # Secrets and encryption
           gnupg

@@ -179,6 +179,8 @@
           gcc.cc.lib
           gcc
           zlib
+          clang-tools
+          pre-commit
 
     
           # Task and time tracking
